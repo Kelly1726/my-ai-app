@@ -5,12 +5,20 @@ const postsArr = [
     { id: '3', title: '开始 AI 全栈', content: '目标：AI 前端全栈开发工程师。' },
 ];
 
-export default function BlogList(){
+
+async function getPosts(){
+ await new Promise(r=>setTimeout(r,500))
+ return postsArr
+}
+export default async function BlogList(){
+    const data = await getPosts()
+    const renderTime=new Date().toLocaleTimeString()
     return (
         <div>
+            <h1>页面渲染时间：{renderTime}</h1>
             <ul>
                 {
-                    postsArr.map(v=>(
+                    data.map(v=>(
                         <li key={v.id}>
                             <Link href={`/blog/${v.id}`}>{v.title}</Link>
                         </li>
