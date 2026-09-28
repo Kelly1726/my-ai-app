@@ -1,7 +1,9 @@
+import { prisma } from '@/lib/prisma'
 import {addMessage} from './actions'
-import { messages } from './data'
 
-export default function Guestbook(){
+
+export default async function Guestbook(){
+    const messages = await prisma.message.findMany({orderBy:{createdAt:'desc'}})
     return (
         <div style={{padding:'2rem'}}>
             <h1>留言板</h1>
