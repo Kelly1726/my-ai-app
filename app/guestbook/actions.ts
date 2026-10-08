@@ -1,13 +1,18 @@
-'use server';
+"use server";
 
 import { prisma } from "@/lib/prisma";
-
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 export async function addMessage(formData: FormData) {
-    const name = formData.get('name')?.toString() || '匿名'
-    const content = formData.get('content')?.toString() || ''
-   await prisma.message.create({data:{name,content}})
-    revalidatePath('/guestbook')
+    const session = await auth();
+    if (!session?.user?.name) return;
 
+    const content = formData.get("content")?.toString() || "";
+    if (!content) return;
+
+    await prisma.message.create({
+        data: { name: session.user.name, content },
+    });
+    revalidatePath("/guestbook");
 }

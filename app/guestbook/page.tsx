@@ -1,23 +1,42 @@
-import { prisma } from '@/lib/prisma'
-import {addMessage} from './actions'
+import { prisma } from "@/lib/prisma";
+import { addMessage } from "./actions";
 
+export const dynamic = "force-dynamic";
 
-export default async function Guestbook(){
-    const messages = await prisma.message.findMany({orderBy:{createdAt:'desc'}})
+export default async function Guestbook() {
+    const messages = await prisma.message.findMany({ orderBy: { createdAt: "desc" } });
+
     return (
-        <div style={{padding:'2rem'}}>
-            <h1>留言板</h1>
-            <form action={addMessage} style={{display:'flex',flexDirection:'column',gap:'0.5rem',maxWidth:400}}>
+        <div className="max-w-2xl mx-auto w-full px-4 py-10 flex-1">
+            <h1 className="text-2xl font-bold mb-1">留言板</h1>
+            <p className="text-sm text-gray-500 mb-6">登录后即可留言</p>
 
-                <input name='name' placeholder='你的名字'></input>
-                <textarea name='content' placeholder='留言内容' required></textarea>
-                <button type='submit'>提交</button>
+            <form action={addMessage} className="mb-10 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-3">
+                <textarea name="content" placeholder="写点什么..." required
+                    className="w-full min-h-24 p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y text-sm" />
+                <div className="flex justify-end">
+                    <button type="submit"
+                        className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+                        发表留言
+                    </button>
+                </div>
             </form>
-           <ul style={{marginTop:'2rem'}}>
-             {messages.map(v=>(
-                <li key={v.id}><b>{v.name}</b>:{v.content}</li>
-             ))}
-           </ul>
+
+            {messages.length === 0 ? (
+                <p className="text-center text-gray-400 py-10">还没有留言，来抢沙发</p>
+            ) : (
+                <ul className="space-y-3">
+                    {messages.map(m => (
+                        <li key={m.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-semibold text-gray-800">{m.name}</span>
+                                <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString()}</span>
+                            </div>
+                            <p className="text-gray-700 text-sm leading-relaxed">{m.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
-    )
+    );
 }
